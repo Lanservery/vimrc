@@ -35,14 +35,13 @@ set linebreak
 "                                   外观                                     "
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set number    "显示行号
-"set t_Co=256             " 开启256色支持
 " gvim设置
 if has("gui_running")
-    set guifont=DroidSansMono\ Nerd\ Font\ Regular\ 12      " 设置字体
+    set guifont=JetBrainsMono\ Nerd\ Font\ Mono\ 12      " 设置字体
     set lines=43 columns=92    " 放在这里防止造成终端界面混乱
-    "主题
-    colorscheme flattened_dark
-    "colorscheme flattened_light
+    set cursorline    " 光标所在的当前行高亮
+    " 主题
+    "colorscheme flattened_dark
     set guioptions-=m           " 隐藏菜单栏
     set guioptions-=T           " 隐藏工具栏
     set guioptions-=L           " 隐藏左侧滚动条
@@ -54,8 +53,8 @@ set listchars=tab:>-,trail:.    " tab 字符的显示样式，且行末不显示
 set list    " 显示Tab字符
 set laststatus=2
 "set cursorline    " 光标所在的当前行高亮
-"hi CursorLine  cterm=none ctermbg=237
-"hi CursorLineNR  cterm=none ctermbg=237
+"hi CursorLine cterm=NONE ctermbg=none
+"hi CursorLineNR  cterm=none ctermbg=242
 " StatusLine
 "set statusline=%<%.50F\             "显示文件名和文件路径 (%<应该可以去掉)
 "set statusline+=%=%y%m%r%h%w\        "显示文件类型及文件状态
@@ -74,7 +73,6 @@ set shiftwidth=4        "每一级缩进的长度
 filetype indent on     "不同文件类型采用不同缩进
 set autoindent     "按下回车键后，保持与上一行的缩进一致
 "set smartindent     "智能缩进
-"set cursorline     "光标所在的当前行高亮
 "命令模式下，底部操作指令按下 Tab 键自动补全
 "第一次按下 Tab，会显示所有匹配的操作指令的清单；第二次按下 Tab，会依次选择各个指令
 set wildmenu
@@ -105,11 +103,7 @@ let g:netrw_alto = 0 " 控制预览窗口位于左侧或右侧, 与 netrw_previe
 map <F5> :call CompileRun()<CR>
 func! CompileRun()
     exec "w"
-    if &filetype == 'python'
-        "exec ":set splitbelow<CR>:split<CR>"
-        "exec "silent !python3 %"
-        exec "!python3 %"
-    elseif &filetype == 'text'
+    if &filetype == 'text'
         exec "silent !plantuml % -tpng"
     elseif &filetype == 'dot'
         exec "silent !dot % -T png -o %<.png"
@@ -159,7 +153,7 @@ Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle'] }
 " startify放在devicons前面以显示图标
 Plug 'mhinz/vim-startify'
 Plug 'ryanoasis/vim-devicons', { 'on': ['NERDTreeToggle'] }
-Plug 'mattn/emmet-vim',{ 'for': [ 'html'] }
+Plug 'mattn/emmet-vim',{ 'for': [ 'html','htmldjango'] }
 Plug 'preservim/tagbar',{ 'on': ['TagbarToggle'] }
 Plug 'Yggdroot/indentLine'
 Plug 'itchyny/lightline.vim'
@@ -201,8 +195,8 @@ let g:NERDTreeExactMatchHighlightFullName = 1
 let g:NERDTreePatternMatchHighlightFullName = 1
 let g:NERDTreeHighlightFolders = 1
 let g:NERDTreeHighlightFoldersFullName = 1
-let g:NERDTreeDirArrowExpandable = '▷'     "树的显示图标
-let g:NERDTreeDirArrowCollapsible = '▼'
+let g:NERDTreeDirArrowExpandable = '📁'     "树的显示图标
+let g:NERDTreeDirArrowCollapsible = '📂'
 "let g:NERDTreeShowLineNumbers=1  " 显示行号
 let g:NERDTreeWinSize=24    " window size
 "Delete help information at the top
@@ -213,11 +207,12 @@ let NERDTreeAutoCenter=1
 let NERDTreeAutoDeleteBuffer=1
 
 " emmet-vim
-let g:user_emmet_leader_key='<C-E>'     " 设置快捷键
+"let g:user_emmet_leader_key='<C-E>'     " 设置快捷键
+let g:user_emmet_leader_key='<leader>'     " 设置快捷键
 
 " auto-pairs
-let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"',"`":"`", '```':'```', '"""':'"""', "'''":"'''",'<':'>'}
-au FileType vim let b:AutoPairs={'(':')', '[':']', '{':'}',"'":"'","`":"`", '```':'```', '"""':'"""', "'''":"'''",'<':'>'} " Disable auto close quote in .vim
+"let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"',"`":"`", '```':'```', '"""':'"""', "'''":"'''",'<':'>'}
+au FileType vim let b:AutoPairs={'(':')', '[':']', '{':'}',"'":"'","`":"`", '```':'```', '"""':'"""', "'''":"'''"} " Disable auto close quote in .vim
 " 防止与YCM的 Enter 键有冲突
 let g:AutoPairsMapCR = 0
 
@@ -247,18 +242,21 @@ let g:ycm_autoclose_preview_window_after_completion = 1
 "在字符串输入中也能补全
 let g:ycm_complete_in_strings = 1
 " 文件白名单
-let g:ycm_filetype_whitelist = {
-            \ "python":1,
-            \ "javascript":1,
-            \ "typescript":1,
-            \ "css":1,
-            \ "html":1,
-            \ }
-" 设置在下面几种格式的文件上屏蔽ycm
-"let g:ycm_filetype_blacklist = {
-"      \ 'tagbar' : 1,
-"      \ 'nerdtree' : 1,
-"      \}
+"let g:ycm_filetype_whitelist = {
+"            \ "python":1,
+"            \ "javascript":1,
+"            \ "typescript":1,
+"            \ "css":1,
+"            \ "html":1,
+"            \ }
+" 文件黑名单
+let g:ycm_filetype_blacklist = {
+      \ 'tagbar' : 1,
+      \ 'nerdtree' : 1,
+      \ 'text' : 1,
+      \ 'vim' : 1,
+      \ 'go' : 1
+      \}
 let g:ycm_cache_omnifunc=0        " 禁止缓存匹配项,每次都重新生成匹配项
 let g:ycm_seed_identifiers_with_syntax=1    " 语法关键字补全
 let g:ycm_disable_for_files_larger_than_kb = 3000    " YCM服务开启最大文件限制
@@ -280,6 +278,7 @@ nmap <F8> :TagbarToggle<CR>
 let g:lightline = {
       \ 'component': {
       \   'lineinfo': "%{line('.') . '/' . line('$')}",
+      \   'readonly': '%{&filetype=="help"?"":&readonly?"🔒":""}'
       \ },
       \ }
 
